@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
     let filePath = '';
 
     // Routing
-    if (req.url === '/' || req.url === '/home') {
+    if ( req.url === '/home') {
         filePath = path.join(__dirname, 'public', 'index.html');
 
     } else if (req.url === '/about') {
