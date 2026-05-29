@@ -5,18 +5,26 @@ const path = require('path');
 const PORT = 3000;
 
 const server = http.createServer((req, res) => {
+    // Get the path, remove query strings (everything after ?), and convert to lowercase
+    const urlPath = req.url.split('?')[0].toLowerCase();
+    
+    // Remove trailing slash if it's not the root path (e.g., "/home/" becomes "/home")
+    const cleanedPath = (urlPath.length > 1 && urlPath.endsWith('/')) 
+        ? urlPath.slice(0, -1) 
+        : urlPath;
+
     let fileName = '';
     let contentType = 'text/html';
     let statusCode = 200;
 
     // Route mapping: decide which file to open based on the URL
-    if (req.url === '/' || req.url === '/home') {
+    if (cleanedPath === '/' || cleanedPath === '/home') {
         fileName = 'index.html';
-    } else if (req.url === '/about') {
+    } else if (cleanedPath === '/about') {
         fileName = 'about.html';
-    } else if (req.url === '/contact') {
+    } else if (cleanedPath === '/contact') {
         fileName = 'contact.html';
-    } else if (req.url === '/style.css') {
+    } else if (cleanedPath === '/style.css') {
         // Handle CSS file requests so styles actually load in the browser
         fileName = 'style.css';
         contentType = 'text/css';
