@@ -8,53 +8,31 @@ const PORT = 3000;
 const server = http.createServer((req, res) => {
 
     let filePath = '';
+    let contentType = 'text/html';
+    let statusCode = 200;
 
     // Routing
-    if ( req.url === '/home') {
-        filePath = path.join(__dirname, 'public', 'index.html');
-
-    } else if (req.url === '/about') {
-        filePath = path.join(__dirname, 'public', 'about.html');
-
-    } else if (req.url === '/contact') {
-        filePath = path.join(__dirname, 'public', 'contact.html');
-
+    if (req.url === '/' || req.url === '/home' || req.url === '/index.html') {
+        filePath = path.join(__dirname, 'index.html');
+    } else if (req.url === '/about' || req.url === '/about.html') {
+        filePath = path.join(__dirname, 'about.html');
+    } else if (req.url === '/contact' || req.url === '/contact.html') {
+        filePath = path.join(__dirname, 'contact.html');
     } else if (req.url === '/style.css') {
-
-        // Serve CSS file
-        filePath = path.join(__dirname, 'public', 'style.css');
-
-        fs.readFile(filePath, (err, content) => {
-            if (err) {
-                res.writeHead(500);
-                res.end('Server Error');
-            } else {
-                res.writeHead(200, { 'Content-Type': 'text/css' });
-                res.end(content);
-            }
-        });
-
-        return;
-
+        filePath = path.join(__dirname, 'style.css');
+        contentType = 'text/css';
     } else {
-
         // 404 page
-        filePath = path.join(__dirname, 'public', '404.html');
+        filePath = path.join(__dirname, '404.html');
+        statusCode = 404;
     }
 
     fs.readFile(filePath, (err, content) => {
-
         if (err) {
-            res.writeHead(500);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Server Error');
         } else {
-
-            if (filePath.includes('404.html')) {
-                res.writeHead(404, { 'Content-Type': 'text/html' });
-            } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-            }
-
+            res.writeHead(statusCode, { 'Content-Type': contentType });
             res.end(content);
         }
     });
@@ -63,4 +41,3 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
