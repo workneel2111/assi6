@@ -1,64 +1,66 @@
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const server = http.createServer((req, res) => {
 
-    // Normalize URL
-    let urlPath = req.url.split('?')[0];
+    let filePath = '';
 
-    // Remove trailing slash except root
-    if (urlPath.length > 1 && urlPath.endsWith('/')) {
-        urlPath = urlPath.slice(0, -1);
+    // Routing
+    if (req.url === '/' || req.url === '/home') {
+        filePath = path.join(__dirname, 'public', 'index.html');
+
+    } else if (req.url === '/about') {
+        filePath = path.join(__dirname, 'public', 'about.html');
+
+    } else if (req.url === '/contact') {
+        filePath = path.join(__dirname, 'public', 'contact.html');
+
+    } else if (req.url === '/style.css') {
+
+        // Serve CSS file
+        filePath = path.join(__dirname, 'public', 'style.css');
+
+        fs.readFile(filePath, (err, content) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Server Error');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/css' });
+                res.end(content);
+            }
+        });
+
+        return;
+
+    } else {
+
+        // 404 page
+        filePath = path.join(__dirname, 'public', '404.html');
     }
 
-    // Convert to lowercase
-    urlPath = urlPath.toLowerCase();
+    fs.readFile(filePath, (err, content) => {
 
-    let fileName = '';
-    let contentType = 'text/html';
-    let statusCode = 200;
-
-    switch (urlPath) {
-        case '/':
-        case '/home':
-            fileName = 'index.html';
-            break;
-
-        case '/about':
-            fileName = 'about.html';
-            break;
-
-        case '/contact':
-            fileName = 'contact.html';
-            break;
-
-        case '/style.css':
-            fileName = 'style.css';
-            contentType = 'text/css';
-            break;
-
-        default:
-            fileName = '404.html';
-            statusCode = 404;
-    }
-
-    const filePath = path.join(__dirname, fileName);
-
-    fs.readFile(filePath, (err, data) => {
         if (err) {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('500 Internal Server Error');
-            return;
-        }
+            res.writeHead(500);
+            res.end('Server Error');
+        } else {
 
-        res.writeHead(statusCode, { 'Content-Type': contentType });
-        res.end(data);
+            if (filePath.includes('404.html')) {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+            }
+
+            res.end(content);
+        }
     });
 });
 
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
+
