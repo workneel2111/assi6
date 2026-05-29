@@ -1,28 +1,13 @@
-# Node.js Routing Assignment
+# Assignment 6 - Node.js Web Server
 
-## Project Overview
-This is a simple web server built using Node.js for my college assignment. The project demonstrates how to create a server from scratch without using any external frameworks like Express. It uses core Node.js modules to handle routing and serve HTML files to the browser.
+This is a simple server I built using core Node.js modules for my routing assignment. The goal was to learn how to handle web requests and serve files manually without using frameworks like Express.
 
-## Features
-*   Built using only core Node.js modules (`http`, `fs`, and `path`).
-*   Custom routing logic to handle different page requests.
-*   Serves static HTML files and a CSS stylesheet.
-*   Includes a custom 404 page for invalid links.
+## What I implemented:
+- Basic routing for Home, About, and Contact pages.
+- Static file serving for the CSS stylesheet.
+- A custom 404 error page.
 
-## Routes Available
-*   `/` or `/home`: The main landing page (`index.html`).
-*   `/about`: Information about this assignment (`about.html`).
-*   `/contact`: A simple contact form page (`contact.html`).
-*   Any other URL: Displays the 404 error page (`404.html`).
-
-## How to Run the Server
-1.  Make sure you have Node.js installed on your computer.
-2.  Open your terminal or command prompt in the project folder.
-3.  Run the following command:
-    ```bash
-    node server.js
-    ```
-
-## How to Visit
-Once the server is running, open your web browser and go to:
-**http://localhost:3000**
+## How to run:
+1. Open your terminal in the project directory.
+2. Run the command: `node server.js`
+3. Open your browser and go to `http://localhost:3000`.

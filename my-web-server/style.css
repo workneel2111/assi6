@@ -1,40 +1,28 @@
-/* Basic CSS for my Node.js Project */
-
 body {
-    background-color: #f4f4f4; /* Simple light gray background */
-    font-family: Arial, sans-serif; /* Standard clean font */
-    margin: 50px;
-    color: #333; /* Dark gray text */
+    background-color: #f0f0f0;
+    font-family: sans-serif;
+    margin: 40px;
+    color: #222;
 }
 
 h1 {
-    color: #000080; /* Navy blue color for headings */
-    border-bottom: 2px solid #000080; /* Simple line under heading */
+    color: navy;
+    border-bottom: 1px solid navy;
     padding-bottom: 10px;
 }
 
-p {
-    font-size: 16px;
-    line-height: 1.6; /* Adds space between lines of text */
+nav {
+    margin-bottom: 20px;
 }
 
-/* Simple border and spacing for the contact form */
 form {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    padding: 20px;
-    width: 300px;
+    background-color: white;
+    border: 1px solid gray;
+    padding: 15px;
+    display: inline-block;
 }
 
-/* Style for the button */
 button {
-    background-color: #e0e0e0;
-    border: 1px solid #999;
-    padding: 5px 15px;
+    margin-top: 10px;
     cursor: pointer;
-}
-
-/* Changes the button color when you hover over it */
-button:hover {
-    background-color: #cccccc;
 }

@@ -1,49 +1,46 @@
-const http = require('http'); // Module to create the server
-const fs = require('fs');     // Module to read files from your computer
-const path = require('path'); // Module to handle file paths
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const PORT = 3000;
 
 const server = http.createServer((req, res) => {
-    // Get the URL requested by the user
-    const url = req.url;
-
-    // These variables will store the file we want to show and the status code
     let fileName = '';
+    let contentType = 'text/html';
     let statusCode = 200;
 
-    // 1. Routing Logic: Determine which file to show based on the URL path
-    if (url === '/' || url === '/home') {
+    // Route mapping: decide which file to open based on the URL
+    if (req.url === '/' || req.url === '/home') {
         fileName = 'index.html';
-    } else if (url === '/about') {
+    } else if (req.url === '/about') {
         fileName = 'about.html';
-    } else if (url === '/contact') {
+    } else if (req.url === '/contact') {
         fileName = 'contact.html';
+    } else if (req.url === '/style.css') {
+        // Handle CSS file requests so styles actually load in the browser
+        fileName = 'style.css';
+        contentType = 'text/css';
     } else {
-        // If the URL doesn't match any of the above, use the 404 file
+        // Default to 404 if the page doesn't exist
         fileName = '404.html';
         statusCode = 404;
     }
 
-    // Construct the full path to the HTML file
-    // __dirname refers to the folder where this server.js file is located
     const filePath = path.join(__dirname, fileName);
 
-    // 2. File Serving Logic: Read the file content from the disk
+    // Read the requested file and send the response
     fs.readFile(filePath, (err, data) => {
         if (err) {
-            // If there's an error (like the file is missing), send a 500 error
+            console.error(`File read error: ${fileName} was not found.`);
             res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('500 - Internal Server Error');
+            res.end('Server Error');
         } else {
-            // If successful, send the content of the HTML file
-            res.writeHead(statusCode, { 'Content-Type': 'text/html' });
+            res.writeHead(statusCode, { 'Content-Type': contentType });
             res.end(data);
         }
     });
 });
 
-// Start the server on port 3000
 server.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Server started on http://localhost:${PORT}`);
 });
