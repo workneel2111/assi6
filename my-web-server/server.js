@@ -1,129 +1,49 @@
-// Cleaned up Server Logic for Laundry Assignment
+const http = require('http'); // Module to create the server
+const fs = require('fs');     // Module to read files from your computer
+const path = require('path'); // Module to handle file paths
 
-const http = require('http');
-const fs = require('fs').promises;
-const path = require('path');
+const PORT = 3000;
 
-const PORT = 5500;
+const server = http.createServer((req, res) => {
+    // Get the URL requested by the user
+    const url = req.url;
 
-/**
- * Helper function to serve HTML/CSS files
- * @param {object} res - Response object
- * @param {string} fileName - File to serve
- * @param {number} statusCode - HTTP status code
- */
-async function serveFile(res, fileName, statusCode = 200) {
+    // These variables will store the file we want to show and the status code
+    let fileName = '';
+    let statusCode = 200;
 
-    // Correct file locations
-    const possibleLocations = [
-        path.resolve(__dirname, fileName),           // current folder
-        path.resolve(__dirname, 'public', fileName), // public folder
-        path.resolve(process.cwd(), fileName),       // working directory
-        path.resolve(process.cwd(), 'public', fileName)
-    ];
-
-    let fileData = null;
-    let successfulPath = '';
-
-    // Search file in all possible locations
-    for (const location of possibleLocations) {
-        console.log(`-- Checking: ${location}`);
-
-        try {
-            fileData = await fs.readFile(location);
-            successfulPath = location;
-            break;
-        } catch (err) {
-            continue;
-        }
-    }
-
-    // If file found
-    if (fileData) {
-
-        console.log(`[OK] Served ${fileName} from: ${successfulPath}`);
-
-        const ext = path.extname(fileName).toLowerCase();
-
-        let contentType = 'text/html';
-
-        if (ext === '.css') {
-            contentType = 'text/css';
-        } else if (ext === '.js') {
-            contentType = 'application/javascript';
-        }
-
-        res.writeHead(statusCode, {
-            'Content-Type': contentType,
-            'Cache-Control': 'no-store'
-        });
-
-        res.end(fileData);
-
+    // 1. Routing Logic: Determine which file to show based on the URL path
+    if (url === '/' || url === '/home') {
+        fileName = 'index.html';
+    } else if (url === '/about') {
+        fileName = 'about.html';
+    } else if (url === '/contact') {
+        fileName = 'contact.html';
     } else {
-
-        // File not found
-        console.error(`[404] Could not find ${fileName} anywhere.`);
-
-        res.writeHead(404, {
-            'Content-Type': 'text/html'
-        });
-
-        res.end(`
-            <h1>404 Not Found</h1>
-            <p>Server could not locate ${fileName}</p>
-        `);
-    }
-}
-
-// Create server
-const server = http.createServer(async (req, res) => {
-
-    // Remove query string and convert to lowercase
-    const rawUrl = req.url.split('?')[0].toLowerCase();
-
-    // Remove trailing slash
-    const cleanPath =
-        (rawUrl.endsWith('/') && rawUrl.length > 1)
-            ? rawUrl.slice(0, -1)
-            : rawUrl;
-
-    // Ignore favicon request
-    if (cleanPath === '/favicon.ico') {
-        res.writeHead(204);
-        return res.end();
+        // If the URL doesn't match any of the above, use the 404 file
+        fileName = '404.html';
+        statusCode = 404;
     }
 
-    console.log(`[${new Date().toLocaleTimeString()}] Request for: ${cleanPath}`);
+    // Construct the full path to the HTML file
+    // __dirname refers to the folder where this server.js file is located
+    const filePath = path.join(__dirname, fileName);
 
-    // Routing
-    switch (cleanPath) {
-
-        case '/':
-        case '/home':
-            await serveFile(res, 'index.html');
-            break;
-
-        case '/about':
-            await serveFile(res, 'about.html');
-            break;
-
-        case '/contact':
-            await serveFile(res, 'contact.html');
-            break;
-
-        case '/style.css':
-            await serveFile(res, 'style.css');
-            break;
-
-        default:
-            await serveFile(res, '404.html', 404);
-            break;
-    }
+    // 2. File Serving Logic: Read the file content from the disk
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            // If there's an error (like the file is missing), send a 500 error
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('500 - Internal Server Error');
+        } else {
+            // If successful, send the content of the HTML file
+            res.writeHead(statusCode, { 'Content-Type': 'text/html' });
+            res.end(data);
+        }
+    });
 });
 
-// Start server
+// Start the server on port 3000
 server.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
-    console.log('Press Ctrl+C to stop the server');
 });
